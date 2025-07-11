@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { authAPI, ticketsAPI, usersAPI, companiesAPI } from './api';
+import TicketChat from './components/TicketChat';
 import './App.css';
 
 function App() {
@@ -402,6 +403,18 @@ function App() {
                     <span>Company: {ticket.company?.title}</span>
                     <span>{new Date(ticket.createdOn).toLocaleDateString()}</span>
                   </div>
+                  
+                  {/* Chat Section */}
+                  <div className="ticket-chat-section">
+                    <TicketChat 
+                      ticketId={ticket.id} 
+                      ticketState={ticket.state}
+                      onMessageSent={() => {
+                        // Optionally refresh data or show notification
+                      }}
+                    />
+                  </div>
+                  
                   <div className="ticket-actions">
                     {canUpdateTickets && (
                       <select

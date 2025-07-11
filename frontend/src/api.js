@@ -15,10 +15,8 @@ const handleResponse = async (response) => {
     
     // Handle validation errors with details
     if (errorData.code === 'VALIDATION_ERROR' && errorData.details) {
-      const details = errorData.details.map(detail => 
-        `${detail.field}: ${detail.message}`
-      ).join(', ');
-      throw new Error(`Validation failed: ${details}`);
+      const messages = errorData.details.map(detail => detail.message);
+      throw new Error(messages.join(', '));
     }
     
     // Handle other specific error codes
@@ -288,6 +286,32 @@ export const companiesAPI = {
   // Get company statistics
   getCompanyStats: async () => {
     return authenticatedRequest('/api/companies/stats/summary');
+  }
+};
+
+// Message API
+export const messagesAPI = {
+  async getMessages(ticketId) {
+    const response = await fetch(`${API_URL}/tickets/${ticketId}/messages`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getAuthToken()}`
+      }
+    });
+    return handleResponse(response);
+  },
+
+  async createMessage(ticketId, content) {
+    const response = await fetch(`${API_URL}/tickets/${ticketId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getAuthToken()}`
+      },
+      body: JSON.stringify({ content })
+    });
+    return handleResponse(response);
   }
 };
 
