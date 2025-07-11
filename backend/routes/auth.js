@@ -4,7 +4,8 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../db/index.js';
 import { 
   authenticateToken, 
-  generateToken, 
+  generateToken,
+  generateAndStoreAccessToken, 
   generateRefreshToken 
 } from '../middleware/auth.js';
 import { validateRequest, schemas } from '../middleware/validation.js';
@@ -43,7 +44,7 @@ router.post('/login', validateRequest(schemas.login), async (req, res) => {
     }
 
     // Generate tokens
-    const accessToken = generateToken(user);
+    const accessToken = await generateAndStoreAccessToken(user);
     const refreshToken = await generateRefreshToken(user);
 
     // Update last seen
@@ -127,7 +128,7 @@ router.post('/register', validateRequest(schemas.register), async (req, res) => 
     });
 
     // Generate tokens
-    const accessToken = generateToken(user);
+    const accessToken = await generateAndStoreAccessToken(user);
     const refreshToken = await generateRefreshToken(user);
 
     res.status(201).json({

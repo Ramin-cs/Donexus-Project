@@ -142,7 +142,36 @@ export const requireSameOrganization = async (req, res, next) => {
 };
 
 /**
- * Generate JWT token
+ * Generate and store access token in DB
+ * @param {Object} user - User object
+ * @returns {Promise<string>} Access token
+ */
+export const generateAndStoreAccessToken = async (user) => {
+  const token = jwt.sign(
+    { 
+      userId: user.id, 
+      email: user.emailAddress,
+      userType: user.userType,
+      companyId: user.companyId
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN }
+  );
+
+  // Store access token in database
+  await prisma.sessionToken.create({
+    data: {
+      value: token,
+      personId: user.id,
+      expiresOn: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24h
+    }
+  });
+
+  return token;
+};
+
+/**
+ * Generate JWT token (sync, legacy)
  * @param {Object} user - User object
  * @returns {string} JWT token
  */
