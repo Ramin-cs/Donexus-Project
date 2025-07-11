@@ -1,4 +1,5 @@
 import React from 'react';
+import PasswordStrength from './PasswordStrength';
 
 const AuthForm = ({ 
   showLogin, 
@@ -74,6 +75,7 @@ const AuthForm = ({
               onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
               required
             />
+            <PasswordStrength password={registerForm.password} />
             <select
               value={registerForm.companyId}
               onChange={(e) => setRegisterForm({ ...registerForm, companyId: parseInt(e.target.value) })}
