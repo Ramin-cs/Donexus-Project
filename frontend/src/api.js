@@ -12,7 +12,30 @@ const getAuthToken = () => {
 const handleResponse = async (response) => {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    
+    // Handle validation errors with details
+    if (errorData.code === 'VALIDATION_ERROR' && errorData.details) {
+      const details = errorData.details.map(detail => 
+        `${detail.field}: ${detail.message}`
+      ).join(', ');
+      throw new Error(`Validation failed: ${details}`);
+    }
+    
+    // Handle other specific error codes
+    if (errorData.code === 'USER_DELETION_ERROR') {
+      throw new Error('Cannot delete user. User may have associated tickets or other data.');
+    }
+    
+    if (errorData.code === 'COMPANY_HAS_DATA') {
+      throw new Error(`Cannot delete company. It has ${errorData.data?.members || 0} members and ${errorData.data?.issues || 0} tickets.`);
+    }
+    
+    // Handle general errors with details
+    if (errorData.error) {
+      throw new Error(errorData.error);
+    }
+    
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
   return response.json();
 };

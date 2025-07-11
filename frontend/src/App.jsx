@@ -211,6 +211,7 @@ function App() {
   const canManageCompanies = currentUser?.userType === 'ADMIN';
   const canDeleteTickets = currentUser?.userType === 'ADMIN';
   const canUpdateTickets = currentUser?.userType === 'ADMIN' || currentUser?.userType === 'SUPPORT';
+  const canCreateTickets = currentUser?.userType === 'NORMAL';
 
   if (loading) {
     return (
@@ -353,9 +354,11 @@ function App() {
           <div className="tickets-section">
             <div className="section-header">
               <h2>Tickets ({tickets.length})</h2>
-              <button onClick={() => setShowCreateTicket(true)} className="create-btn">
-                Create Ticket
-              </button>
+              {canCreateTickets && (
+                <button onClick={() => setShowCreateTicket(true)} className="create-btn">
+                  Create Ticket
+                </button>
+              )}
             </div>
 
             {showCreateTicket && (
