@@ -292,7 +292,7 @@ export const companiesAPI = {
 // Message API
 export const messagesAPI = {
   async getMessages(ticketId) {
-    const response = await fetch(`${API_URL}/tickets/${ticketId}/messages`, {
+    const response = await fetch(`${API_URL}/api/tickets/${ticketId}/messages`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -303,7 +303,7 @@ export const messagesAPI = {
   },
 
   async createMessage(ticketId, content) {
-    const response = await fetch(`${API_URL}/tickets/${ticketId}/messages`, {
+    const response = await fetch(`${API_URL}/api/tickets/${ticketId}/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
