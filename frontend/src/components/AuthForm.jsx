@@ -1,6 +1,16 @@
 import React from 'react';
 import PasswordStrength from './PasswordStrength';
 
+const passwordIsValid = (password) => {
+  return (
+    password.length >= 6 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /\d/.test(password) &&
+    /[!@#$%^&*]/.test(password)
+  );
+};
+
 const AuthForm = ({ 
   showLogin, 
   setShowLogin, 
@@ -35,13 +45,14 @@ const AuthForm = ({
         {error && <div className="error">{error}</div>}
 
         {showLogin ? (
-          <form onSubmit={handleLogin} className="auth-form">
+          <form onSubmit={handleLogin} className="auth-form" autoComplete="off">
             <input
               type="email"
               placeholder="Email"
               value={loginForm.email}
               onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
               required
+              autoComplete="off"
             />
             <input
               type="password"
@@ -49,17 +60,19 @@ const AuthForm = ({
               value={loginForm.password}
               onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
               required
+              autoComplete="off"
             />
             <button type="submit">Login</button>
           </form>
         ) : (
-          <form onSubmit={handleRegister} className="auth-form">
+          <form onSubmit={handleRegister} className="auth-form" autoComplete="off">
             <input
               type="text"
               placeholder="Full Name"
               value={registerForm.fullName}
               onChange={(e) => setRegisterForm({ ...registerForm, fullName: e.target.value })}
               required
+              autoComplete="off"
             />
             <input
               type="email"
@@ -67,6 +80,7 @@ const AuthForm = ({
               value={registerForm.email}
               onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
               required
+              autoComplete="off"
             />
             <input
               type="password"
@@ -74,6 +88,7 @@ const AuthForm = ({
               value={registerForm.password}
               onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
               required
+              autoComplete="off"
             />
             <PasswordStrength password={registerForm.password} />
             <select
@@ -85,7 +100,9 @@ const AuthForm = ({
               <option value={2}>Globex Inc</option>
               <option value={3}>TechStart Solutions</option>
             </select>
-            <button type="submit">Register</button>
+            <button type="submit" disabled={!passwordIsValid(registerForm.password)}>
+              Register
+            </button>
           </form>
         )}
 

@@ -83,6 +83,17 @@ router.post('/login', validateRequest(schemas.login), async (req, res) => {
  * @desc Register new user
  * @access Public
  */
+function isStrongPassword(password) {
+  return (
+    typeof password === 'string' &&
+    password.length >= 6 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /\d/.test(password) &&
+    /[!@#$%^&*]/.test(password)
+  );
+}
+
 router.post('/register', validateRequest(schemas.register), async (req, res) => {
   try {
     const { fullName, email, password, companyId } = req.body;
@@ -96,6 +107,13 @@ router.post('/register', validateRequest(schemas.register), async (req, res) => 
       return res.status(409).json({
         error: 'User already exists',
         code: 'USER_EXISTS'
+      });
+    }
+
+    if (!isStrongPassword(password)) {
+      return res.status(400).json({
+        error: 'Password must be at least 6 characters and include uppercase, lowercase, number, and special character (!@#$%^&*)',
+        code: 'VALIDATION_ERROR',
       });
     }
 

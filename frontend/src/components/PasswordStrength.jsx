@@ -4,27 +4,27 @@ const PasswordStrength = ({ password }) => {
   const requirements = [
     {
       id: 'length',
-      text: 'حداقل 6 کاراکتر',
+      text: 'At least 6 characters',
       test: (pass) => pass.length >= 6,
     },
     {
       id: 'uppercase',
-      text: 'حداقل یک حرف بزرگ',
+      text: 'At least one uppercase letter',
       test: (pass) => /[A-Z]/.test(pass),
     },
     {
       id: 'lowercase',
-      text: 'حداقل یک حرف کوچک',
+      text: 'At least one lowercase letter',
       test: (pass) => /[a-z]/.test(pass),
     },
     {
       id: 'number',
-      text: 'حداقل یک عدد',
+      text: 'At least one number',
       test: (pass) => /\d/.test(pass),
     },
     {
       id: 'special',
-      text: 'حداقل یک کاراکتر خاص (!@#$%^&*)',
+      text: 'At least one special character (!@#$%^&*)',
       test: (pass) => /[!@#$%^&*]/.test(pass),
     },
   ];
@@ -39,10 +39,10 @@ const PasswordStrength = ({ password }) => {
 
   const getStrengthText = () => {
     const validCount = requirements.filter(req => req.test(password)).length;
-    if (validCount <= 2) return 'ضعیف';
-    if (validCount <= 3) return 'متوسط';
-    if (validCount <= 4) return 'قوی';
-    return 'خیلی قوی';
+    if (validCount <= 2) return 'Weak';
+    if (validCount <= 3) return 'Medium';
+    if (validCount <= 4) return 'Strong';
+    return 'Very strong';
   };
 
   return (
