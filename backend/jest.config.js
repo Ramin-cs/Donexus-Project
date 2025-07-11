@@ -1,9 +1,5 @@
 export default {
   testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.js'],
-  moduleNameMapping: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-  },
   testMatch: ['**/__tests__/**/*.test.js'],
   collectCoverageFrom: [
     'routes/**/*.js',
@@ -14,6 +10,6 @@ export default {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  transform: {},
   testTimeout: 30000,
+  transform: {},
 };
