@@ -155,10 +155,11 @@ router.get('/:id',
 /**
  * @route POST /tickets
  * @desc Create new ticket
- * @access Private (NORMAL, SUPPORT, ADMIN)
+ * @access Private (NORMAL only)
  */
 router.post('/', 
   authenticateToken, 
+  requireRole(['NORMAL']),
   validateRequest(schemas.createTicket),
   async (req, res) => {
     try {

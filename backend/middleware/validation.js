@@ -64,7 +64,7 @@ export const schemas = {
   createTicket: z.object({
     body: z.object({
       subject: z.string().min(3, 'Subject must be at least 3 characters').max(200, 'Subject too long'),
-      details: z.string().optional(),
+      details: z.string().min(1, 'Details are required'),
       state: z.enum(['open', 'pending', 'closed', 'resolved']).optional()
     })
   }),

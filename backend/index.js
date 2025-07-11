@@ -47,7 +47,8 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use(limiter);
+// Apply rate limiting only to auth routes
+app.use('/api/auth', limiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
