@@ -52,7 +52,7 @@ A comprehensive, role-based ticketing system built with modern technologies and 
 
 ### 🔐 Login Page
 
-![Login Page]([https://i.imgur.com/8XZqY2L.png](https://imgur.com/PsN6daj))
+![Login Page](https://i.imgur.com/PsN6daj.png)
 
 ### 🎫 Tickets Dashboard
 ![Tickets Dashboard](https://i.imgur.com/JQwE5mN.png)
