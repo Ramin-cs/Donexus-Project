@@ -151,20 +151,27 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Backend running at http://localhost:${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔒 Security: Helmet enabled`);
   console.log(`⚡ Rate limiting: ${process.env.RATE_LIMIT_MAX_REQUESTS || 100} requests per ${process.env.RATE_LIMIT_WINDOW_MS || 900000}ms`);
 });
 
+// Export for testing
+export { app };
+
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
-  process.exit(0);
+  server.close(() => {
+    process.exit(0);
+  });
 });
 
 process.on('SIGINT', () => {
   console.log('SIGINT received, shutting down gracefully');
-  process.exit(0);
+  server.close(() => {
+    process.exit(0);
+  });
 });
