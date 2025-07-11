@@ -299,56 +299,7 @@ router.delete('/:id',
   }
 );
 
-/**
- * @route GET /tickets/stats/summary
- * @desc Get ticket statistics
- * @access Private (SUPPORT, ADMIN)
- */
-router.get('/stats/summary', 
-  authenticateToken, 
-  requireRole(['SUPPORT', 'ADMIN']),
-  async (req, res) => {
-    try {
-      let whereClause = {};
-
-      // Role-based filtering
-      if (req.user.userType === 'SUPPORT') {
-        whereClause.companyId = req.user.companyId;
-      }
-      // Admin can see all tickets
-
-      const [totalTickets, openTickets, pendingTickets, closedTickets, resolvedTickets] = 
-        await Promise.all([
-          prisma.issue.count({ where: whereClause }),
-          prisma.issue.count({ where: { ...whereClause, state: 'open' } }),
-          prisma.issue.count({ where: { ...whereClause, state: 'pending' } }),
-          prisma.issue.count({ where: { ...whereClause, state: 'closed' } }),
-          prisma.issue.count({ where: { ...whereClause, state: 'resolved' } })
-        ]);
-
-      res.json({
-        message: 'Ticket statistics retrieved successfully',
-        data: {
-          summary: {
-            total: totalTickets,
-            open: openTickets,
-            pending: pendingTickets,
-            closed: closedTickets,
-            resolved: resolvedTickets
-          }
-        }
-      });
-    } catch (error) {
-      console.error('Get ticket stats error:', error);
-      res.status(500).json({
-        error: 'Failed to retrieve ticket statistics',
-        code: 'TICKET_STATS_ERROR'
-      });
-    }
-  }
-);
-
-// Message routes
+// Message routes - must come before stats route
 /**
  * @route GET /tickets/:ticketId/messages
  * @desc Get all messages for a ticket
@@ -449,6 +400,55 @@ router.post('/:ticketId/messages',
       res.status(500).json({
         error: 'Failed to send message',
         code: 'MESSAGE_CREATION_ERROR'
+      });
+    }
+  }
+);
+
+/**
+ * @route GET /tickets/stats/summary
+ * @desc Get ticket statistics
+ * @access Private (SUPPORT, ADMIN)
+ */
+router.get('/stats/summary', 
+  authenticateToken, 
+  requireRole(['SUPPORT', 'ADMIN']),
+  async (req, res) => {
+    try {
+      let whereClause = {};
+
+      // Role-based filtering
+      if (req.user.userType === 'SUPPORT') {
+        whereClause.companyId = req.user.companyId;
+      }
+      // Admin can see all tickets
+
+      const [totalTickets, openTickets, pendingTickets, closedTickets, resolvedTickets] = 
+        await Promise.all([
+          prisma.issue.count({ where: whereClause }),
+          prisma.issue.count({ where: { ...whereClause, state: 'open' } }),
+          prisma.issue.count({ where: { ...whereClause, state: 'pending' } }),
+          prisma.issue.count({ where: { ...whereClause, state: 'closed' } }),
+          prisma.issue.count({ where: { ...whereClause, state: 'resolved' } })
+        ]);
+
+      res.json({
+        message: 'Ticket statistics retrieved successfully',
+        data: {
+          summary: {
+            total: totalTickets,
+            open: openTickets,
+            pending: pendingTickets,
+            closed: closedTickets,
+            resolved: resolvedTickets
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Get ticket stats error:', error);
+      res.status(500).json({
+        error: 'Failed to retrieve ticket statistics',
+        code: 'TICKET_STATS_ERROR'
       });
     }
   }
