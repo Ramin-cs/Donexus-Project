@@ -48,6 +48,14 @@ A comprehensive, role-based ticketing system built with modern technologies and 
 - **Status indicators** with color coding
 - **Role-based UI** that adapts to user permissions
 
+## 📸 Screenshots
+
+### 🔐 Login Page
+![Login Page](https://i.imgur.com/8XZqY2L.png)
+
+### 🎫 Tickets Dashboard
+![Tickets Dashboard](https://i.imgur.com/JQwE5mN.png)
+
 ## 🏗️ Architecture
 
 ### Backend Architecture
@@ -409,27 +417,13 @@ npm run build
 # Serve the dist folder with your preferred web server
 ```
 
-## 📁 Project Structure
+## � Screenshots
 
-```
-ticketing-system/
-├── backend/
-│   ├── db/                 # Database service
-│   ├── middleware/         # Authentication & validation
-│   ├── routes/            # API routes
-│   ├── prisma/            # Database schema & migrations
-│   ├── tests/             # Manual test suite
-│   ├── Dockerfile         # Docker configuration
-│   ├── docker-compose.yml # Production Docker setup
-│   └── index.js           # Main entry point
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx        # Main component
-│   │   ├── App.css        # Styling
-│   │   └── api.js         # API service
-│   └── index.html         # HTML entry
-└── README.md              # This file
-```
+### 🔐 Login Page
+![Login Page](https://i.imgur.com/8XZqY2L.png)
+
+### 🎫 Tickets Dashboard
+![Tickets Dashboard](https://i.imgur.com/JQwE5mN.png)
 
 ## � Available Scripts
 
