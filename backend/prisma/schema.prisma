@@ -60,7 +60,7 @@ model Issue {
   personId       Int           @map("user_id")
   companyId      Int           @map("organisation_id")
   createdOn      DateTime      @default(now()) @map("created_at")
-  person         Person        @relation(fields: [personId], references: [id])
+  person         Person        @relation(fields: [personId], references: [id], onDelete: Cascade)
   company        Company       @relation(fields: [companyId], references: [id])
 
   @@map("tickets")
