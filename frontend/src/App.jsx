@@ -57,6 +57,13 @@ function App() {
     checkAuth();
   }, []);
 
+  // Reload data when tab changes
+  useEffect(() => {
+    if (isAuthenticated && currentUser) {
+      loadData();
+    }
+  }, [activeTab, isAuthenticated, currentUser]);
+
   const loadData = async () => {
     try {
       setLoading(true);
@@ -140,6 +147,28 @@ function App() {
     
     try {
       await ticketsAPI.deleteTicket(ticketId);
+      await loadData();
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (!confirm('Are you sure you want to delete this user?')) return;
+    
+    try {
+      await usersAPI.deleteUser(userId);
+      await loadData();
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const handleDeleteCompany = async (companyId) => {
+    if (!confirm('Are you sure you want to delete this company?')) return;
+    
+    try {
+      await companiesAPI.deleteCompany(companyId);
       await loadData();
     } catch (error) {
       setError(error.message);
@@ -471,6 +500,14 @@ function App() {
                   </span>
                   <p>Company: {user.company?.title}</p>
                   <p>Last seen: {user.lastSeenAt ? new Date(user.lastSeenAt).toLocaleDateString() : 'Never'}</p>
+                  {canManageUsers && (
+                    <button 
+                      onClick={() => handleDeleteUser(user.id)}
+                      className="delete-btn"
+                    >
+                      Delete User
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -515,6 +552,14 @@ function App() {
                   <h3>{company.title}</h3>
                   <p>Members: {company._count?.members || 0}</p>
                   <p>Tickets: {company._count?.issues || 0}</p>
+                  {canManageCompanies && (
+                    <button 
+                      onClick={() => handleDeleteCompany(company.id)}
+                      className="delete-btn"
+                    >
+                      Delete Company
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
