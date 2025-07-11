@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { authAPI, ticketsAPI, usersAPI, companiesAPI } from './api';
-import TicketChat from './components/TicketChat';
+import AuthForm from './components/AuthForm';
+import Header from './components/Header';
+import Navigation from './components/Navigation';
+import TicketsSection from './components/TicketsSection';
+import UsersSection from './components/UsersSection';
+import CompaniesSection from './components/CompaniesSection';
 import './App.css';
 
 function App() {
@@ -225,361 +230,76 @@ function App() {
   if (!isAuthenticated) {
     return (
       <div className="app">
-        <div className="auth-container">
-          <div className="auth-card">
-            <h1>🎫 Ticketing System</h1>
-            
-            <div className="auth-tabs">
-              <button 
-                className={showLogin ? 'active' : ''} 
-                onClick={() => setShowLogin(true)}
-              >
-                Login
-              </button>
-              <button 
-                className={!showLogin ? 'active' : ''} 
-                onClick={() => setShowLogin(false)}
-              >
-                Register
-              </button>
-            </div>
-
-            {error && <div className="error">{error}</div>}
-
-            {showLogin ? (
-              <form onSubmit={handleLogin} className="auth-form">
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={loginForm.email}
-                  onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                  required
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={loginForm.password}
-                  onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                  required
-                />
-                <button type="submit">Login</button>
-              </form>
-            ) : (
-              <form onSubmit={handleRegister} className="auth-form">
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={registerForm.fullName}
-                  onChange={(e) => setRegisterForm({ ...registerForm, fullName: e.target.value })}
-                  required
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={registerForm.email}
-                  onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
-                  required
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={registerForm.password}
-                  onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
-                  required
-                />
-                <select
-                  value={registerForm.companyId}
-                  onChange={(e) => setRegisterForm({ ...registerForm, companyId: parseInt(e.target.value) })}
-                  required
-                >
-                  <option value={1}>Acme Corp</option>
-                  <option value={2}>Globex Inc</option>
-                  <option value={3}>TechStart Solutions</option>
-                </select>
-                <button type="submit">Register</button>
-              </form>
-            )}
-
-            <div className="auth-info">
-              <p><strong>Test Accounts:</strong></p>
-              <p>Admin: admin@acme.com / password123</p>
-              <p>Support: support@acme.com / password123</p>
-              <p>User: user1@acme.com / password123</p>
-            </div>
-          </div>
-        </div>
+        <AuthForm
+          showLogin={showLogin}
+          setShowLogin={setShowLogin}
+          loginForm={loginForm}
+          setLoginForm={setLoginForm}
+          registerForm={registerForm}
+          setRegisterForm={setRegisterForm}
+          handleLogin={handleLogin}
+          handleRegister={handleRegister}
+          error={error}
+        />
       </div>
     );
   }
 
   return (
     <div className="app">
-      <header className="header">
-        <h1>🎫 Ticketing System</h1>
-        <div className="user-info">
-          <span>Welcome, {currentUser?.fullName}</span>
-          <span className="user-type">({currentUser?.userType})</span>
-          <button onClick={handleLogout} className="logout-btn">Logout</button>
-        </div>
-      </header>
-
-      <nav className="nav">
-        <button 
-          className={activeTab === 'tickets' ? 'active' : ''} 
-          onClick={() => setActiveTab('tickets')}
-        >
-          Tickets
-        </button>
-        {canManageUsers && (
-          <button 
-            className={activeTab === 'users' ? 'active' : ''} 
-            onClick={() => setActiveTab('users')}
-          >
-            Users
-          </button>
-        )}
-        {canManageCompanies && (
-          <button 
-            className={activeTab === 'companies' ? 'active' : ''} 
-            onClick={() => setActiveTab('companies')}
-          >
-            Companies
-          </button>
-        )}
-      </nav>
+      <Header currentUser={currentUser} handleLogout={handleLogout} />
+      
+      <Navigation
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        canManageUsers={canManageUsers}
+        canManageCompanies={canManageCompanies}
+      />
 
       <main className="main">
         {error && <div className="error">{error}</div>}
 
         {activeTab === 'tickets' && (
-          <div className="tickets-section">
-            <div className="section-header">
-              <h2>Tickets ({tickets.length})</h2>
-              {canCreateTickets && (
-                <button onClick={() => setShowCreateTicket(true)} className="create-btn">
-                  Create Ticket
-                </button>
-              )}
-            </div>
-
-            {showCreateTicket && (
-              <div className="modal">
-                <div className="modal-content">
-                  <h3>Create New Ticket</h3>
-                  <form onSubmit={handleCreateTicket}>
-                    <input
-                      type="text"
-                      placeholder="Subject"
-                      value={ticketForm.subject}
-                      onChange={(e) => setTicketForm({ ...ticketForm, subject: e.target.value })}
-                      required
-                    />
-                    <textarea
-                      placeholder="Details"
-                      value={ticketForm.details}
-                      onChange={(e) => setTicketForm({ ...ticketForm, details: e.target.value })}
-                    />
-                    <div className="modal-actions">
-                      <button type="submit">Create</button>
-                      <button type="button" onClick={() => setShowCreateTicket(false)}>
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            <div className="tickets-grid">
-              {tickets.map(ticket => (
-                <div key={ticket.id} className="ticket-card">
-                  <div className="ticket-header">
-                    <h3>{ticket.subject}</h3>
-                    <span className={`status ${ticket.state}`}>{ticket.state}</span>
-                  </div>
-                  {ticket.details && <p>{ticket.details}</p>}
-                  <div className="ticket-meta">
-                    <span>By: {ticket.person?.fullName}</span>
-                    <span>Company: {ticket.company?.title}</span>
-                    <span>{new Date(ticket.createdOn).toLocaleDateString()}</span>
-                  </div>
-                  
-                  {/* Chat Section */}
-                  <div className="ticket-chat-section">
-                    <TicketChat 
-                      ticketId={ticket.id} 
-                      ticketState={ticket.state}
-                      onMessageSent={() => {
-                        // Optionally refresh data or show notification
-                      }}
-                    />
-                  </div>
-                  
-                  <div className="ticket-actions">
-                    {canUpdateTickets && (
-                      <select
-                        value={ticket.state}
-                        onChange={(e) => handleUpdateTicketStatus(ticket.id, e.target.value)}
-                      >
-                        <option value="open">Open</option>
-                        <option value="pending">Pending</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="closed">Closed</option>
-                      </select>
-                    )}
-                    {canDeleteTickets && (
-                      <button 
-                        onClick={() => handleDeleteTicket(ticket.id)}
-                        className="delete-btn"
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <TicketsSection
+            tickets={tickets}
+            canCreateTickets={canCreateTickets}
+            canUpdateTickets={canUpdateTickets}
+            canDeleteTickets={canDeleteTickets}
+            showCreateTicket={showCreateTicket}
+            setShowCreateTicket={setShowCreateTicket}
+            ticketForm={ticketForm}
+            setTicketForm={setTicketForm}
+            handleCreateTicket={handleCreateTicket}
+            handleUpdateTicketStatus={handleUpdateTicketStatus}
+            handleDeleteTicket={handleDeleteTicket}
+          />
         )}
 
         {activeTab === 'users' && canManageUsers && (
-          <div className="users-section">
-            <div className="section-header">
-              <h2>Users ({users.length})</h2>
-              <button onClick={() => setShowCreateUser(true)} className="create-btn">
-                Create User
-              </button>
-            </div>
-
-            {showCreateUser && (
-              <div className="modal">
-                <div className="modal-content">
-                  <h3>Create New User</h3>
-                  <form onSubmit={handleCreateUser}>
-                    <input
-                      type="text"
-                      placeholder="Full Name"
-                      value={userForm.fullName}
-                      onChange={(e) => setUserForm({ ...userForm, fullName: e.target.value })}
-                      required
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      value={userForm.email}
-                      onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
-                      required
-                    />
-                    <input
-                      type="password"
-                      placeholder="Password"
-                      value={userForm.password}
-                      onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                      required
-                    />
-                    <select
-                      value={userForm.userType}
-                      onChange={(e) => setUserForm({ ...userForm, userType: e.target.value })}
-                    >
-                      <option value="NORMAL">Normal User</option>
-                      <option value="SUPPORT">Support</option>
-                      <option value="ADMIN">Admin</option>
-                    </select>
-                    <select
-                      value={userForm.companyId}
-                      onChange={(e) => setUserForm({ ...userForm, companyId: parseInt(e.target.value) })}
-                    >
-                      {companies.map(company => (
-                        <option key={company.id} value={company.id}>
-                          {company.title}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="modal-actions">
-                      <button type="submit">Create</button>
-                      <button type="button" onClick={() => setShowCreateUser(false)}>
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            <div className="users-grid">
-              {users.map(user => (
-                <div key={user.id} className="user-card">
-                  <h3>{user.fullName}</h3>
-                  <p>{user.emailAddress}</p>
-                  <span className={`user-type ${user.userType.toLowerCase()}`}>
-                    {user.userType}
-                  </span>
-                  <p>Company: {user.company?.title}</p>
-                  <p>Last seen: {user.lastSeenAt ? new Date(user.lastSeenAt).toLocaleDateString() : 'Never'}</p>
-                  {canManageUsers && (
-                    <button 
-                      onClick={() => handleDeleteUser(user.id)}
-                      className="delete-btn"
-                    >
-                      Delete User
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+          <UsersSection
+            users={users}
+            companies={companies}
+            canManageUsers={canManageUsers}
+            showCreateUser={showCreateUser}
+            setShowCreateUser={setShowCreateUser}
+            userForm={userForm}
+            setUserForm={setUserForm}
+            handleCreateUser={handleCreateUser}
+            handleDeleteUser={handleDeleteUser}
+          />
         )}
 
         {activeTab === 'companies' && canManageCompanies && (
-          <div className="companies-section">
-            <div className="section-header">
-              <h2>Companies ({companies.length})</h2>
-              <button onClick={() => setShowCreateCompany(true)} className="create-btn">
-                Create Company
-              </button>
-            </div>
-
-            {showCreateCompany && (
-              <div className="modal">
-                <div className="modal-content">
-                  <h3>Create New Company</h3>
-                  <form onSubmit={handleCreateCompany}>
-                    <input
-                      type="text"
-                      placeholder="Company Name"
-                      value={companyForm.title}
-                      onChange={(e) => setCompanyForm({ ...companyForm, title: e.target.value })}
-                      required
-                    />
-                    <div className="modal-actions">
-                      <button type="submit">Create</button>
-                      <button type="button" onClick={() => setShowCreateCompany(false)}>
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            <div className="companies-grid">
-              {companies.map(company => (
-                <div key={company.id} className="company-card">
-                  <h3>{company.title}</h3>
-                  <p>Members: {company._count?.members || 0}</p>
-                  <p>Tickets: {company._count?.issues || 0}</p>
-                  {canManageCompanies && (
-                    <button 
-                      onClick={() => handleDeleteCompany(company.id)}
-                      className="delete-btn"
-                    >
-                      Delete Company
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+          <CompaniesSection
+            companies={companies}
+            canManageCompanies={canManageCompanies}
+            showCreateCompany={showCreateCompany}
+            setShowCreateCompany={setShowCreateCompany}
+            companyForm={companyForm}
+            setCompanyForm={setCompanyForm}
+            handleCreateCompany={handleCreateCompany}
+            handleDeleteCompany={handleDeleteCompany}
+          />
         )}
       </main>
     </div>
