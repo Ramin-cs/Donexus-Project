@@ -103,9 +103,18 @@ export const requireRole = (allowedRoles) => {
  */
 export const requireSameOrganization = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    // Handle both ticket routes (id) and message routes (ticketId)
+    const ticketId = req.params.id || req.params.ticketId;
+    
+    if (!ticketId) {
+      return res.status(400).json({ 
+        error: 'Ticket ID required',
+        code: 'TICKET_ID_MISSING'
+      });
+    }
+
     const ticket = await prisma.issue.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(ticketId) },
       include: { company: true }
     });
 
