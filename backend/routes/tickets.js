@@ -348,4 +348,110 @@ router.get('/stats/summary',
   }
 );
 
+// Message routes
+/**
+ * @route GET /tickets/:ticketId/messages
+ * @desc Get all messages for a ticket
+ * @access Private (NORMAL, SUPPORT, ADMIN)
+ */
+router.get('/:ticketId/messages', 
+  authenticateToken, 
+  validateRequest(schemas.getMessages),
+  requireSameOrganization,
+  async (req, res) => {
+    try {
+      const ticketId = parseInt(req.params.ticketId);
+
+      const messages = await prisma.message.findMany({
+        where: { issueId: ticketId },
+        include: {
+          sender: {
+            select: {
+              id: true,
+              fullName: true,
+              userType: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'asc' }
+      });
+
+      res.json({
+        message: 'Messages retrieved successfully',
+        data: { messages }
+      });
+    } catch (error) {
+      console.error('Get messages error:', error);
+      res.status(500).json({
+        error: 'Failed to retrieve messages',
+        code: 'MESSAGES_RETRIEVAL_ERROR'
+      });
+    }
+  }
+);
+
+/**
+ * @route POST /tickets/:ticketId/messages
+ * @desc Create new message in a ticket
+ * @access Private (NORMAL, SUPPORT, ADMIN)
+ */
+router.post('/:ticketId/messages', 
+  authenticateToken, 
+  validateRequest(schemas.createMessage),
+  requireSameOrganization,
+  async (req, res) => {
+    try {
+      const ticketId = parseInt(req.params.ticketId);
+      const { content } = req.body;
+
+      // Check if ticket is closed
+      const ticket = await prisma.issue.findUnique({
+        where: { id: ticketId }
+      });
+
+      if (!ticket) {
+        return res.status(404).json({
+          error: 'Ticket not found',
+          code: 'TICKET_NOT_FOUND'
+        });
+      }
+
+      if (ticket.state === 'closed') {
+        return res.status(400).json({
+          error: 'Cannot send messages to closed tickets',
+          code: 'TICKET_CLOSED'
+        });
+      }
+
+      const message = await prisma.message.create({
+        data: {
+          content,
+          issueId: ticketId,
+          senderId: req.user.id
+        },
+        include: {
+          sender: {
+            select: {
+              id: true,
+              fullName: true,
+              userType: true
+            }
+          }
+        }
+      });
+
+      res.status(201).json({
+        message: 'Message sent successfully',
+        data: { message }
+      });
+    } catch (error) {
+      console.error('Create message error:', error);
+      res.status(500).json({
+        error: 'Failed to send message',
+        code: 'MESSAGE_CREATION_ERROR'
+      });
+    }
+  }
+);
+
 export default router;

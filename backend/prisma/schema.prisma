@@ -32,6 +32,7 @@ model Person {
   company           Company       @relation(fields: [companyId], references: [id])
   issues            Issue[]
   tokens            SessionToken[]
+  messages          Message[]
 
   @@map("users")
   @@index([emailAddress])
@@ -62,8 +63,23 @@ model Issue {
   createdOn      DateTime      @default(now()) @map("created_at")
   person         Person        @relation(fields: [personId], references: [id], onDelete: Cascade)
   company        Company       @relation(fields: [companyId], references: [id])
+  messages       Message[]
 
   @@map("tickets")
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  issueId   Int      @map("ticket_id")
+  senderId  Int      @map("user_id")
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  sender    Person   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+  @@index([issueId])
+  @@index([senderId])
 }
 
 enum UserType {

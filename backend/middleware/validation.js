@@ -122,6 +122,19 @@ export const schemas = {
     })
   }),
 
+  // Message schemas
+  createMessage: z.object({
+    body: z.object({
+      content: z.string().min(1, 'Message content is required').max(1000, 'Message too long')
+    })
+  }),
+
+  getMessages: z.object({
+    params: z.object({
+      ticketId: z.string().regex(/^\d+$/, 'Ticket ID must be a number')
+    })
+  }),
+
   // Query schemas
   listTickets: z.object({
     query: z.object({
