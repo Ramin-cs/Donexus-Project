@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Testing
+  postgres_test:
+    image: postgres:15-alpine
+    container_name: donexus_postgres_test
+    environment:
+      POSTGRES_DB: donexus_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend Application for Testing
+  backend_test:
+    build: .
+    container_name: donexus_backend_test
+    ports:
+      - "4001:4000"
+    environment:
+      NODE_ENV: test
+      PORT: 4000
+      DATABASE_URL: postgresql://postgres:postgres@postgres_test:5432/donexus_test
+      JWT_SECRET: test-jwt-secret-key-for-testing-only
+      JWT_REFRESH_SECRET: test-refresh-secret-key-for-testing-only
+    depends_on:
+      postgres_test:
+        condition: service_healthy
+    volumes:
+      - ./prisma:/app/prisma
+      - ./tests:/app/tests
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        npx prisma db seed &&
+        npm test
+      "
+
+volumes:
+  postgres_test_data:
