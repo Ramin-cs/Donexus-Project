@@ -11,7 +11,8 @@ const UsersSection = ({
   userForm,
   setUserForm,
   handleCreateUser,
-  handleDeleteUser
+  handleDeleteUser,
+  handleUpdateUser
 }) => {
   return (
     <div className="users-section">
@@ -82,6 +83,7 @@ const UsersSection = ({
             user={user}
             canManageUsers={canManageUsers}
             onDelete={handleDeleteUser}
+            onUpdate={handleUpdateUser}
           />
         ))}
       </div>

@@ -213,6 +213,26 @@ function App() {
     }
   };
 
+  const handleUpdateUser = async (userId, updateData) => {
+    try {
+      setError(null);
+      await usersAPI.updateUser(userId, updateData);
+      await loadData();
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const handleUpdateCompany = async (companyId, updateData) => {
+    try {
+      setError(null);
+      await companiesAPI.updateCompany(companyId, updateData);
+      await loadData();
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
   const canManageUsers = currentUser?.userType === 'ADMIN';
   const canManageCompanies = currentUser?.userType === 'ADMIN';
   const canDeleteTickets = currentUser?.userType === 'ADMIN';
@@ -286,6 +306,7 @@ function App() {
             setUserForm={setUserForm}
             handleCreateUser={handleCreateUser}
             handleDeleteUser={handleDeleteUser}
+            handleUpdateUser={handleUpdateUser}
           />
         )}
 
@@ -299,6 +320,7 @@ function App() {
             setCompanyForm={setCompanyForm}
             handleCreateCompany={handleCreateCompany}
             handleDeleteCompany={handleDeleteCompany}
+            handleUpdateCompany={handleUpdateCompany}
           />
         )}
       </main>

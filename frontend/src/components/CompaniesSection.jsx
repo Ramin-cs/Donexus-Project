@@ -10,7 +10,8 @@ const CompaniesSection = ({
   companyForm,
   setCompanyForm,
   handleCreateCompany,
-  handleDeleteCompany
+  handleDeleteCompany,
+  handleUpdateCompany
 }) => {
   return (
     <div className="companies-section">
@@ -49,6 +50,7 @@ const CompaniesSection = ({
             company={company}
             canManageCompanies={canManageCompanies}
             onDelete={handleDeleteCompany}
+            onUpdate={handleUpdateCompany}
           />
         ))}
       </div>
